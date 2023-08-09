@@ -20,3 +20,14 @@ C:\Users\Garrison Scarboro\Desktop\ISR_GUI_WINFORMS\Test\obj\Debug\Test.csproj.G
 C:\Users\Garrison Scarboro\Desktop\ISR_GUI_WINFORMS\Test\obj\Debug\Test.csproj.CoreCompileInputs.cache
 C:\Users\Garrison Scarboro\Desktop\ISR_GUI_WINFORMS\Test\obj\Debug\Test.exe
 C:\Users\Garrison Scarboro\Desktop\ISR_GUI_WINFORMS\Test\obj\Debug\Test.pdb
+C:\Users\Garrison Scarboro\Desktop\ISR-MSFS\ISR_GUI_WINFORMS\Test\bin\Debug\Test.exe.config
+C:\Users\Garrison Scarboro\Desktop\ISR-MSFS\ISR_GUI_WINFORMS\Test\bin\Debug\Test.exe
+C:\Users\Garrison Scarboro\Desktop\ISR-MSFS\ISR_GUI_WINFORMS\Test\bin\Debug\Test.pdb
+C:\Users\Garrison Scarboro\Desktop\ISR-MSFS\ISR_GUI_WINFORMS\Test\obj\Debug\Test.csproj.AssemblyReference.cache
+C:\Users\Garrison Scarboro\Desktop\ISR-MSFS\ISR_GUI_WINFORMS\Test\obj\Debug\Test.csproj.SuggestedBindingRedirects.cache
+C:\Users\Garrison Scarboro\Desktop\ISR-MSFS\ISR_GUI_WINFORMS\Test\obj\Debug\Test.Display.resources
+C:\Users\Garrison Scarboro\Desktop\ISR-MSFS\ISR_GUI_WINFORMS\Test\obj\Debug\Test.Properties.Resources.resources
+C:\Users\Garrison Scarboro\Desktop\ISR-MSFS\ISR_GUI_WINFORMS\Test\obj\Debug\Test.csproj.GenerateResource.cache
+C:\Users\Garrison Scarboro\Desktop\ISR-MSFS\ISR_GUI_WINFORMS\Test\obj\Debug\Test.csproj.CoreCompileInputs.cache
+C:\Users\Garrison Scarboro\Desktop\ISR-MSFS\ISR_GUI_WINFORMS\Test\obj\Debug\Test.exe
+C:\Users\Garrison Scarboro\Desktop\ISR-MSFS\ISR_GUI_WINFORMS\Test\obj\Debug\Test.pdb
