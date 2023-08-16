@@ -1,14 +1,14 @@
 //------------------------------------------------------------------------------
 //
-//  SimConnect AI Objects sample
+//  SimConnect AI Objects sample -- Modified for more complex creation of ships
 //  
 //	Description:
 //				Adds Non ATC controlled simulation objects.
-//				Launch a flight from KSEA - Runway 34R
-//				and watch the antics.
-//				Press z to create the objects
-//				Press x to load them with their waypoint lists
-//				Press c to remove the generated objects
+//				Launch a flight from KNZY runway 18 and head towards the ocean.
+//				
+//				Press a number 0-9 to create a number of ships. 
+//				1 = 10 ships, 2 = 20 ships ... 0 = 100 ships
+//				Position, heading, and ship type are randomized.
 //------------------------------------------------------------------------------
 
 #include <windows.h>
@@ -20,46 +20,28 @@
 
 int     quit = 0;
 HANDLE  hSimConnect = NULL;
-DWORD	SHIP1ID = SIMCONNECT_OBJECT_ID_USER;
-DWORD   SHIP2ID = SIMCONNECT_OBJECT_ID_USER;
-DWORD   SHIP3ID = SIMCONNECT_OBJECT_ID_USER;
-DWORD	SHIP4ID = SIMCONNECT_OBJECT_ID_USER;
-DWORD   SHIP5ID = SIMCONNECT_OBJECT_ID_USER;
-DWORD   SHIP6ID = SIMCONNECT_OBJECT_ID_USER;
-DWORD	SHIP7ID = SIMCONNECT_OBJECT_ID_USER;
-DWORD   SHIP8ID = SIMCONNECT_OBJECT_ID_USER;
-DWORD   SHIP9ID = SIMCONNECT_OBJECT_ID_USER;
 DWORD   SHIPKNZYID = SIMCONNECT_OBJECT_ID_USER;
 
 static enum EVENT_ID {
 	EVENT_SIM_START,
 	EVENT_Z,
 	EVENT_X,
-	EVENT_C
+	EVENT_C,
+	EVENT_NUM1,
+	EVENT_NUM2,
+	EVENT_NUM3,
+	EVENT_NUM4,
+	EVENT_NUM5,
+	EVENT_NUM6,
+	EVENT_NUM7,
+	EVENT_NUM8,
+	EVENT_NUM9,
+	EVENT_NUM0,
 };
 
 static enum DATA_REQUEST_ID {
-
-	REQUEST_ADD_SHIP1,
-	REQUEST_ADD_SHIP2,
-	REQUEST_ADD_SHIP3,
-	REQUEST_ADD_SHIP4,
-	REQUEST_ADD_SHIP5,
-	REQUEST_ADD_SHIP6,
-	REQUEST_ADD_SHIP7,
-	REQUEST_ADD_SHIP8,
-	REQUEST_ADD_SHIP9,
 	REQUEST_ADD_SHIPKNZY,
-	REQUEST_REMOVE_SHIPKNZY,
-	REQUEST_REMOVE_SHIP9,
-	REQUEST_REMOVE_SHIP8,
-	REQUEST_REMOVE_SHIP7,
-	REQUEST_REMOVE_SHIP6,
-	REQUEST_REMOVE_SHIP5,
-	REQUEST_REMOVE_SHIP4,
-	REQUEST_REMOVE_SHIP3,
-	REQUEST_REMOVE_SHIP2,
-	REQUEST_REMOVE_SHIP1
+	REQUEST_REMOVE_SHIPKNZY
 };
 
 static enum GROUP_ID {
@@ -81,227 +63,68 @@ static bool	objectsCreated = false;
 void sendFlightPlans()
 {
 	HRESULT hr;
-	SIMCONNECT_DATA_WAYPOINT	waypointListShip1[2];	// Ship1 waypoint list
-	SIMCONNECT_DATA_WAYPOINT	waypointListShip2[2];	// CruiseShip01 waypoint list
-	SIMCONNECT_DATA_WAYPOINT    waypointListShipKNZY[3];
 	
-	// Ship1 goes down the runway
-	waypointListShip1[0].Flags = SIMCONNECT_WAYPOINT_SPEED_REQUESTED;
-	waypointListShip1[0].Altitude = 433; //433
-	waypointListShip1[0].Latitude = 47 + (25.95 / 60);
-	waypointListShip1[0].Longitude = -122 - (18.47 / 60);
-	waypointListShip1[0].ktsSpeed = 75;
-
-	waypointListShip1[1].Flags = SIMCONNECT_WAYPOINT_WRAP_TO_FIRST | SIMCONNECT_WAYPOINT_SPEED_REQUESTED;
-	waypointListShip1[1].Altitude = 433; //433
-	waypointListShip1[1].Latitude = 47 + (26.25 / 60);
-	waypointListShip1[1].Longitude = -122 - (18.46 / 60);
-	waypointListShip1[1].ktsSpeed = 55;
-
-	// Send the two waypoints to Ship1
-	hr = SimConnect_SetDataOnSimObject(hSimConnect, DEFINITION_WAYPOINT, SHIP1ID, 0, ARRAYSIZE(waypointListShip1), sizeof(waypointListShip1[0]), waypointListShip1);
-
-	waypointListShip2[0].Flags = SIMCONNECT_WAYPOINT_SPEED_REQUESTED;
-	waypointListShip2[0].Altitude = 0;
-	waypointListShip2[0].Latitude = 30 + (25.2 / 60); 
-	waypointListShip2[0].Longitude = -81 - (23.24 / 60); 
-	waypointListShip2[0].ktsSpeed = 5;
-
-	waypointListShip2[1].Flags = SIMCONNECT_WAYPOINT_WRAP_TO_FIRST | SIMCONNECT_WAYPOINT_SPEED_REQUESTED;
-	waypointListShip2[1].Altitude = 0;
-	waypointListShip2[1].Latitude = 30 + (24.97 / 60);
-	waypointListShip2[1].Longitude = -81 - (23.24 / 60);
-	waypointListShip2[1].ktsSpeed = 10;
-
-	// Send the two waypoints to the CruiseShip01
-	hr = SimConnect_SetDataOnSimObject(hSimConnect, DEFINITION_WAYPOINT, SHIP2ID, 0, ARRAYSIZE(waypointListShip2), sizeof(waypointListShip2[0]), waypointListShip2);
-
+	SIMCONNECT_DATA_WAYPOINT    waypointListShipKNZY[3];
+	int n = rand() % 100;
 	waypointListShipKNZY[0].Flags = SIMCONNECT_WAYPOINT_SPEED_REQUESTED;
 	waypointListShipKNZY[0].Altitude = 0;
-	waypointListShipKNZY[0].Latitude = 32 + (40.5 / 60);
-	waypointListShipKNZY[0].Longitude = -117 - (13.25 / 60);
+	waypointListShipKNZY[0].Latitude = 32 + (40.45 + (n % 2 - 1) * 0.065 * (rand() % 10 - 2)) / 60;
+	waypointListShipKNZY[0].Longitude = -117 - (13.2 + (n % 2 - 1) * 0.061 * (rand() % 10 - 2)) / 60;
 	waypointListShipKNZY[0].ktsSpeed = 50;
 
 	waypointListShipKNZY[1].Flags = SIMCONNECT_WAYPOINT_SPEED_REQUESTED;
 	waypointListShipKNZY[1].Altitude = 0;
-	waypointListShipKNZY[1].Latitude = 32 + (40.6 / 60);
-	waypointListShipKNZY[1].Longitude = -117 - (13 / 60);
+	waypointListShipKNZY[1].Latitude = 32 + (40.45 + (n % 2 - 1) * 0.073 * (rand() % 10 - 2)) / 60;
+	waypointListShipKNZY[1].Longitude = -117 - (13.2 + (n % 2 - 1) * 0.082 * (rand() % 10 - 2)) / 60;
 	waypointListShipKNZY[1].ktsSpeed = 50;
 
 	waypointListShipKNZY[2].Flags = SIMCONNECT_WAYPOINT_WRAP_TO_FIRST | SIMCONNECT_WAYPOINT_SPEED_REQUESTED;
 	waypointListShipKNZY[2].Altitude = 0;
-	waypointListShipKNZY[2].Latitude = 32 + (40.75 / 60);
-	waypointListShipKNZY[2].Longitude = -117 - (13.75 / 60);
+	waypointListShipKNZY[2].Latitude = 32 + (40.45 + (n % 2 - 1) * 0.042 * (rand() % 10 - 2)) / 60;
+	waypointListShipKNZY[2].Longitude = -117 - (13.2 + (n % 2 - 1) * 0.05 * (rand() % 10 - 2)) / 60;
 	waypointListShipKNZY[2].ktsSpeed = 50;
 
 	hr = SimConnect_SetDataOnSimObject(hSimConnect, DEFINITION_WAYPOINT, SHIPKNZYID, 0, ARRAYSIZE(waypointListShipKNZY), sizeof(waypointListShipKNZY[0]), waypointListShipKNZY);
 }
 
-void setUpSimObjects()
+void setUpSimObjects(int num)
 {
 	SIMCONNECT_DATA_INITPOSITION Init;
 	HRESULT hr;
-	int r = rand() % 10 + 1;
-	for (int i = 0; i < 10; i++)
+	
+	for (int i = 0; i < num; i++)
 	{
 		Init.Altitude = 0.0;
-		Init.Latitude = 32 + ((40.45 + (i%2-1)*0.06*(rand()%10-2))/ 60);
-		Init.Longitude = -117 - ((13.2 + (i%2-1)*0.06*(rand()%10-2))/ 60);	// straight ahead from KNZY
+		Init.Latitude = 32.0 + (40.0 + (rand()%61) / 60.0) / 60.0;
+		Init.Longitude = -117.0 - (12.0 + (20 + (rand()%61)) / 60.0) / 60.0;
 		Init.Pitch = 0.0;
 		Init.Bank = 0.0;
-		Init.Heading = 0.0;
+		Init.Heading = rand() % 361;
 		Init.OnGround = 1;
 		Init.Airspeed = 0;
-		hr = SimConnect_AICreateSimulatedObject(hSimConnect, "CargoShip01", Init, REQUEST_ADD_SHIPKNZY);
+		int type = rand() % 3;
+		if (type > 0)
+		{
+			if (type == 2)
+			{
+				hr = SimConnect_AICreateSimulatedObject(hSimConnect, "Yacht01", Init, REQUEST_ADD_SHIPKNZY);
+			}
+			else hr = SimConnect_AICreateSimulatedObject(hSimConnect, "CargoShip01", Init, REQUEST_ADD_SHIPKNZY);
+		}
+		else hr = SimConnect_AICreateSimulatedObject(hSimConnect, "FishingBoat", Init, REQUEST_ADD_SHIPKNZY);
+		sendFlightPlans();
 	}
-
-	// Standard Cruise Ship
-	Init.Altitude = 0.0;
-	Init.Latitude = 30 + (24.97 / 60);
-	Init.Longitude = -81 - (23.24 / 60);
-	Init.Pitch = 0.0;
-	Init.Bank = 0.0;
-	Init.Heading = 0.0;
-	Init.OnGround = 1;
-	Init.Airspeed = 0;
-
-	hr = SimConnect_AICreateSimulatedObject(hSimConnect, "CruiseShip01", Init, REQUEST_ADD_SHIP1);
-
-	// Larger Cruise Ship
-	Init.Altitude = 0.0;
-	Init.Latitude = 30 + (24.97 / 60);		// paren num is minutes, .decimal is seconds/60 (~51)
-	Init.Longitude = -81 - (23.21 / 60);	// straight ahead from KNRB
-	Init.Pitch = 0.0;
-	Init.Bank = 0.0;
-	Init.Heading = 0.0;
-	Init.OnGround = 1;
-	Init.Airspeed = 0;
-	hr = SimConnect_AICreateSimulatedObject(hSimConnect, "CruiseShip02", Init, REQUEST_ADD_SHIP2);
-
-	// Small Fishing Ship
-	Init.Altitude = 0.0;
-	Init.Latitude = 30 + (24.97 / 60);		// paren num is minutes, .decimal is seconds/60 (~51)
-	Init.Longitude = -81 - (23.27 / 60);	// straight ahead from KNRB
-	Init.Pitch = 0.0;
-	Init.Bank = 0.0;
-	Init.Heading = 0.0;
-	Init.OnGround = 1;
-	Init.Airspeed = 0;
-	hr = SimConnect_AICreateSimulatedObject(hSimConnect, "FishingShip02", Init, REQUEST_ADD_SHIP3);
-
-	// Same size as FS02
-	Init.Altitude = 0.0;
-	Init.Latitude = 30 + (24.97 / 60);		// paren num is minutes, .decimal is seconds/60 (~51)
-	Init.Longitude = -81 - (23.3 / 60);	// straight ahead from KNRB
-	Init.Pitch = 0.0;
-	Init.Bank = 0.0;
-	Init.Heading = 0.0;
-	Init.OnGround = 1;
-	Init.Airspeed = 0;
-	hr = SimConnect_AICreateSimulatedObject(hSimConnect, "FishingShip03", Init, REQUEST_ADD_SHIP4);
-
-	// Largest Yacht, about 1/3 length of CS01
-	Init.Altitude = 0.0;
-	Init.Latitude = 30 + (24.97 / 60);		// paren num is minutes, .decimal is seconds/60 (~51)
-	Init.Longitude = -81 - (23.33 / 60);	// straight ahead from KNRB
-	Init.Pitch = 0.0;
-	Init.Bank = 0.0;
-	Init.Heading = 0.0;
-	Init.OnGround = 1;
-	Init.Airspeed = 0;
-	hr = SimConnect_AICreateSimulatedObject(hSimConnect, "Yacht01", Init, REQUEST_ADD_SHIP5);
-
-	// Same size as Yacht01 -- Substantially larger than fishing ships (?) 
-	Init.Altitude = 0.0;
-	Init.Latitude = 30 + (24.97 / 60);		// paren num is minutes, .decimal is seconds/60 (~51)
-	Init.Longitude = -81 - (23.36 / 60);	// straight ahead from KNRB
-	Init.Pitch = 0.0;
-	Init.Bank = 0.0;
-	Init.Heading = 0.0;
-	Init.OnGround = 1;
-	Init.Airspeed = 0;
-	hr = SimConnect_AICreateSimulatedObject(hSimConnect, "FishingBoat", Init, REQUEST_ADD_SHIP6);
-
-	// Medium sized Yacht
-	Init.Altitude = 0.0;
-	Init.Latitude = 30 + (24.97 / 60);		// paren num is minutes, .decimal is seconds/60 (~51)
-	Init.Longitude = -81 - (23.39 / 60);	// straight ahead from KNRB
-	Init.Pitch = 0.0;
-	Init.Bank = 0.0;
-	Init.Heading = 0.0;
-	Init.OnGround = 1;
-	Init.Airspeed = 0;
-	hr = SimConnect_AICreateSimulatedObject(hSimConnect, "Yacht02", Init, REQUEST_ADD_SHIP7);
-
-	// Smaller Yacht, still larger than Fishing Ships
-	Init.Altitude = 0.0;
-	Init.Latitude = 30 + (24.97 / 60);		// paren num is minutes, .decimal is seconds/60 (~51)
-	Init.Longitude = -81 - (23.42 / 60);	// straight ahead from KNRB
-	Init.Pitch = 0.0;
-	Init.Bank = 0.0;
-	Init.Heading = 0.0;
-	Init.OnGround = 1;
-	Init.Airspeed = 0;
-	hr = SimConnect_AICreateSimulatedObject(hSimConnect, "Yacht03", Init, REQUEST_ADD_SHIP8);
-
-	// Slightly larger than Yacht01 and FB
-	Init.Altitude = 0.0;
-	Init.Latitude = 30 + (24.97 / 60);		// paren num is minutes, .decimal is seconds/60 (~51)
-	Init.Longitude = -81 - (23.45 / 60);	// straight ahead from KNRB
-	Init.Pitch = 0.0;
-	Init.Bank = 0.0;
-	Init.Heading = 0.0;
-	Init.OnGround = 1;
-	Init.Airspeed = 0;
-	hr = SimConnect_AICreateSimulatedObject(hSimConnect, "CargoShip01", Init, REQUEST_ADD_SHIP9);
-
-	Init.Altitude = 0.0;
-	Init.Latitude = 32 + (40.45 / 60);
-	Init.Longitude = -117 - (13.2 / 60);	// straight ahead from KNRB
-	Init.Pitch = 0.0;
-	Init.Bank = 0.0;
-	Init.Heading = 0.0;
-	Init.OnGround = 1;
-	Init.Airspeed = 0;
-	hr = SimConnect_AICreateSimulatedObject(hSimConnect, "CargoShip01", Init, REQUEST_ADD_SHIPKNZY);
+	
 }
 
 void removeSimObjects() {
 	
 	HRESULT hr;
-	if (SHIP1ID != SIMCONNECT_OBJECT_ID_USER) {
-		hr = SimConnect_AIRemoveObject(hSimConnect, SHIP1ID, REQUEST_REMOVE_SHIP1);
-	}
-	if (SHIP2ID != SIMCONNECT_OBJECT_ID_USER) {
-		hr = SimConnect_AIRemoveObject(hSimConnect, SHIP2ID, REQUEST_REMOVE_SHIP2);
-	}
-	if (SHIP3ID != SIMCONNECT_OBJECT_ID_USER) {
-		hr = SimConnect_AIRemoveObject(hSimConnect, SHIP3ID, REQUEST_REMOVE_SHIP3);
-	}
-	if (SHIP4ID != SIMCONNECT_OBJECT_ID_USER) {
-		hr = SimConnect_AIRemoveObject(hSimConnect, SHIP4ID, REQUEST_REMOVE_SHIP4);
-	}
-	if (SHIP5ID != SIMCONNECT_OBJECT_ID_USER) {
-		hr = SimConnect_AIRemoveObject(hSimConnect, SHIP5ID, REQUEST_REMOVE_SHIP5);
-	}
-	if (SHIP6ID != SIMCONNECT_OBJECT_ID_USER) {
-		hr = SimConnect_AIRemoveObject(hSimConnect, SHIP6ID, REQUEST_REMOVE_SHIP6);
-	}
-	if (SHIP7ID != SIMCONNECT_OBJECT_ID_USER) {
-			hr = SimConnect_AIRemoveObject(hSimConnect, SHIP7ID, REQUEST_REMOVE_SHIP7);
-	}
-	if (SHIP8ID != SIMCONNECT_OBJECT_ID_USER) {
-			hr = SimConnect_AIRemoveObject(hSimConnect, SHIP8ID, REQUEST_REMOVE_SHIP8);
-	}
-	if (SHIP9ID != SIMCONNECT_OBJECT_ID_USER) {
-			hr = SimConnect_AIRemoveObject(hSimConnect, SHIP9ID, REQUEST_REMOVE_SHIP9);
-	}
+	
 	if (SHIPKNZYID != SIMCONNECT_OBJECT_ID_USER) {
 		hr = SimConnect_AIRemoveObject(hSimConnect, SHIPKNZYID, REQUEST_REMOVE_SHIPKNZY);
 	}
 }
-
-
 
 static const char* ExceptionName(SIMCONNECT_EXCEPTION exception) {
 	switch (exception) {
@@ -385,6 +208,7 @@ static const char* ExceptionName(SIMCONNECT_EXCEPTION exception) {
 		return "UNKNOWN EXCEPTION";
 	}
 }
+
 void CALLBACK MyDispatchProcSO(SIMCONNECT_RECV* pData, DWORD cbData, void* pContext)
 {
 	HRESULT hr;
@@ -400,7 +224,7 @@ void CALLBACK MyDispatchProcSO(SIMCONNECT_RECV* pData, DWORD cbData, void* pCont
 		case EVENT_Z:
 			if (!objectsCreated)
 			{
-				setUpSimObjects();
+				setUpSimObjects(10);
 				objectsCreated = true;
 				printf("\nPress 'x' to add the waypoints");
 			}
@@ -421,7 +245,76 @@ void CALLBACK MyDispatchProcSO(SIMCONNECT_RECV* pData, DWORD cbData, void* pCont
 				plansSent = false;
 			}
 			break;
-
+		case EVENT_NUM0:
+			if (!objectsCreated)
+			{
+				setUpSimObjects(100);
+				objectsCreated = true;
+				printf("\nPress 'x' to add the waypoints");
+			}
+		case EVENT_NUM1:
+			if (!objectsCreated)
+			{
+				setUpSimObjects(10);
+				objectsCreated = true;
+				printf("\nPress 'x' to add the waypoints");
+			}
+		case EVENT_NUM2:
+			if (!objectsCreated)
+			{
+				setUpSimObjects(20);
+				objectsCreated = true;
+				printf("\nPress 'x' to add the waypoints");
+			}
+		case EVENT_NUM3:
+			if (!objectsCreated)
+			{
+				setUpSimObjects(30);
+				objectsCreated = true;
+				printf("\nPress 'x' to add the waypoints");
+			}
+		case EVENT_NUM4:
+			if (!objectsCreated)
+			{
+				setUpSimObjects(40);
+				objectsCreated = true;
+				printf("\nPress 'x' to add the waypoints");
+			}
+		case EVENT_NUM5:
+			if (!objectsCreated)
+			{
+				setUpSimObjects(50);
+				objectsCreated = true;
+				printf("\nPress 'x' to add the waypoints");
+			}
+		case EVENT_NUM6:
+			if (!objectsCreated)
+			{
+				setUpSimObjects(60);
+				objectsCreated = true;
+				printf("\nPress 'x' to add the waypoints");
+			}
+		case EVENT_NUM7:
+			if (!objectsCreated)
+			{
+				setUpSimObjects(70);
+				objectsCreated = true;
+				printf("\nPress 'x' to add the waypoints");
+			}
+		case EVENT_NUM8:
+			if (!objectsCreated)
+			{
+				setUpSimObjects(80);
+				objectsCreated = true;
+				printf("\nPress 'x' to add the waypoints");
+			}
+		case EVENT_NUM9:
+			if (!objectsCreated)
+			{
+				setUpSimObjects(90);
+				objectsCreated = true;
+				printf("\nPress 'x' to add the waypoints");
+			}
 		default:
 			printf("\nUnknown event: %d", evt->uEventID);
 			break;
@@ -435,45 +328,11 @@ void CALLBACK MyDispatchProcSO(SIMCONNECT_RECV* pData, DWORD cbData, void* pCont
 
 		switch (pObjData->dwRequestID)
 		{
-		case REQUEST_ADD_SHIP1:
-			SHIP1ID = pObjData->dwObjectID;
-			printf("\nCreated Ship1 id = %d", SHIP1ID);
-			break;
-		case REQUEST_ADD_SHIP2:
-			SHIP2ID = pObjData->dwObjectID;
-			printf("\nCreated Ship2 id = %d", SHIP2ID);
-			break;
-		case REQUEST_ADD_SHIP3:
-			SHIP2ID = pObjData->dwObjectID;
-			printf("\nCreated Ship3 id = %d", SHIP3ID);
-			break;
-		case REQUEST_ADD_SHIP6:
-			SHIP6ID = pObjData->dwObjectID;
-			printf("\nCreated Ship1 id = %d", SHIP6ID);
-			break;
-		case REQUEST_ADD_SHIP5:
-			SHIP5ID = pObjData->dwObjectID;
-			printf("\nCreated Ship5 id = %d", SHIP5ID);
-			break;
-		case REQUEST_ADD_SHIP4:
-			SHIP4ID = pObjData->dwObjectID;
-			printf("\nCreated Ship4 id = %d", SHIP4ID);
-			break;
-		case REQUEST_ADD_SHIP7:
-			SHIP7ID = pObjData->dwObjectID;
-			printf("\nCreated Ship7 id = %d", SHIP7ID);
-			break;
-		case REQUEST_ADD_SHIP8:
-			SHIP8ID = pObjData->dwObjectID;
-			printf("\nCreated Ship8 id = %d", SHIP8ID);
-			break;
-		case REQUEST_ADD_SHIP9:
-			SHIP9ID = pObjData->dwObjectID;
-			printf("\nCreated Ship9 id = %d", SHIP9ID);
-			break;
+			
 		case REQUEST_ADD_SHIPKNZY:
 			SHIPKNZYID = pObjData->dwObjectID;
 			printf("\nCreated ShipKNZY id = %d", SHIPKNZYID);
+			sendFlightPlans();
 			break;
 		default:
 			printf("\nUnknown creation %d", pObjData->dwRequestID);
@@ -512,10 +371,32 @@ void testSimObjects()
 		hr = SimConnect_MapClientEventToSimEvent(hSimConnect, EVENT_X);
 		hr = SimConnect_MapClientEventToSimEvent(hSimConnect, EVENT_C);
 
+		hr = SimConnect_MapClientEventToSimEvent(hSimConnect, EVENT_NUM0);
+		hr = SimConnect_MapClientEventToSimEvent(hSimConnect, EVENT_NUM1);
+		hr = SimConnect_MapClientEventToSimEvent(hSimConnect, EVENT_NUM2);
+		hr = SimConnect_MapClientEventToSimEvent(hSimConnect, EVENT_NUM3);
+		hr = SimConnect_MapClientEventToSimEvent(hSimConnect, EVENT_NUM4);
+		hr = SimConnect_MapClientEventToSimEvent(hSimConnect, EVENT_NUM5);
+		hr = SimConnect_MapClientEventToSimEvent(hSimConnect, EVENT_NUM6);
+		hr = SimConnect_MapClientEventToSimEvent(hSimConnect, EVENT_NUM7);
+		hr = SimConnect_MapClientEventToSimEvent(hSimConnect, EVENT_NUM8);
+		hr = SimConnect_MapClientEventToSimEvent(hSimConnect, EVENT_NUM9);
+
 		// Link the private events to keyboard keys, and ensure the input events are off
 		hr = SimConnect_MapInputEventToClientEvent(hSimConnect, INPUT_ZX, "Z", EVENT_Z);
 		hr = SimConnect_MapInputEventToClientEvent(hSimConnect, INPUT_ZX, "X", EVENT_X);
 		hr = SimConnect_MapInputEventToClientEvent(hSimConnect, INPUT_ZX, "C", EVENT_C);
+
+		hr = SimConnect_MapInputEventToClientEvent(hSimConnect, INPUT_ZX, "0", EVENT_NUM0);
+		hr = SimConnect_MapInputEventToClientEvent(hSimConnect, INPUT_ZX, "1", EVENT_NUM1);
+		hr = SimConnect_MapInputEventToClientEvent(hSimConnect, INPUT_ZX, "2", EVENT_NUM2);
+		hr = SimConnect_MapInputEventToClientEvent(hSimConnect, INPUT_ZX, "3", EVENT_NUM3);
+		hr = SimConnect_MapInputEventToClientEvent(hSimConnect, INPUT_ZX, "4", EVENT_NUM4);
+		hr = SimConnect_MapInputEventToClientEvent(hSimConnect, INPUT_ZX, "5", EVENT_NUM5);
+		hr = SimConnect_MapInputEventToClientEvent(hSimConnect, INPUT_ZX, "6", EVENT_NUM6);
+		hr = SimConnect_MapInputEventToClientEvent(hSimConnect, INPUT_ZX, "7", EVENT_NUM7);
+		hr = SimConnect_MapInputEventToClientEvent(hSimConnect, INPUT_ZX, "8", EVENT_NUM8);
+		hr = SimConnect_MapInputEventToClientEvent(hSimConnect, INPUT_ZX, "9", EVENT_NUM9);
 
 		hr = SimConnect_SetInputGroupState(hSimConnect, INPUT_ZX, SIMCONNECT_STATE_OFF);
 
@@ -524,13 +405,23 @@ void testSimObjects()
 		hr = SimConnect_AddClientEventToNotificationGroup(hSimConnect, GROUP_ZX, EVENT_X);
 		hr = SimConnect_AddClientEventToNotificationGroup(hSimConnect, GROUP_ZX, EVENT_C);
 
+		hr = SimConnect_AddClientEventToNotificationGroup(hSimConnect, GROUP_ZX, EVENT_NUM0);
+		hr = SimConnect_AddClientEventToNotificationGroup(hSimConnect, GROUP_ZX, EVENT_NUM1);
+		hr = SimConnect_AddClientEventToNotificationGroup(hSimConnect, GROUP_ZX, EVENT_NUM2);
+		hr = SimConnect_AddClientEventToNotificationGroup(hSimConnect, GROUP_ZX, EVENT_NUM3);
+		hr = SimConnect_AddClientEventToNotificationGroup(hSimConnect, GROUP_ZX, EVENT_NUM4);
+		hr = SimConnect_AddClientEventToNotificationGroup(hSimConnect, GROUP_ZX, EVENT_NUM5);
+		hr = SimConnect_AddClientEventToNotificationGroup(hSimConnect, GROUP_ZX, EVENT_NUM6);
+		hr = SimConnect_AddClientEventToNotificationGroup(hSimConnect, GROUP_ZX, EVENT_NUM7);
+		hr = SimConnect_AddClientEventToNotificationGroup(hSimConnect, GROUP_ZX, EVENT_NUM8);
+		hr = SimConnect_AddClientEventToNotificationGroup(hSimConnect, GROUP_ZX, EVENT_NUM9);
+
 		// Set up a definition for a waypoint list
 		hr = SimConnect_AddToDataDefinition(hSimConnect, DEFINITION_WAYPOINT,
 			"AI Waypoint List", "number", SIMCONNECT_DATATYPE_WAYPOINT);
 
 		hr = SimConnect_SetInputGroupState(hSimConnect, INPUT_ZX, SIMCONNECT_STATE_ON);
-		printf("\nHead straight out towards the ocean, Press 'z' to create the boats");
-
+		printf("\nHead straight out towards the ocean, Press a number to create the boats");
 		printf("\nLaunch a flight.");
 
 		while (0 == quit)
@@ -542,7 +433,6 @@ void testSimObjects()
 		hr = SimConnect_Close(hSimConnect);
 	}
 }
-
 
 int __cdecl _tmain(int argc, _TCHAR* argv[])
 {
