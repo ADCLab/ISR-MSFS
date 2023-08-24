@@ -1,1 +1,8 @@
-﻿C:\Users\Garrison Scarboro\Desktop\ISR-MSFS\AIObjectsAndWaypoints\AIObjects.vcxproj(74,5): error MSB4019: The imported project "C:\Users\SimConnect SDK\VS\SimConnectClient.props" was not found. Confirm that the expression in the Import declaration "..\..\..\..\SimConnect SDK\VS\SimConnectClient.props" is correct, and that the file exists on disk.
+﻿  AIObjects.cpp
+C:\MSFS SDK\Samples\VisualStudio\SimConnectSamples\AIObjectsAndWaypoints\AIObjects.cpp(40,2): warning C4091: 'static ': ignored on left of 'EVENT_ID' when no variable is declared
+C:\MSFS SDK\Samples\VisualStudio\SimConnectSamples\AIObjectsAndWaypoints\AIObjects.cpp(45,2): warning C4091: 'static ': ignored on left of 'DATA_REQUEST_ID' when no variable is declared
+C:\MSFS SDK\Samples\VisualStudio\SimConnectSamples\AIObjectsAndWaypoints\AIObjects.cpp(49,2): warning C4091: 'static ': ignored on left of 'GROUP_ID' when no variable is declared
+C:\MSFS SDK\Samples\VisualStudio\SimConnectSamples\AIObjectsAndWaypoints\AIObjects.cpp(53,2): warning C4091: 'static ': ignored on left of 'INPUT_ID' when no variable is declared
+C:\MSFS SDK\Samples\VisualStudio\SimConnectSamples\AIObjectsAndWaypoints\AIObjects.cpp(57,2): warning C4091: 'static ': ignored on left of 'DEFINITION_ID' when no variable is declared
+C:\MSFS SDK\Samples\VisualStudio\SimConnectSamples\AIObjectsAndWaypoints\AIObjects.cpp(221,10): warning C4101: 'hr': unreferenced local variable
+  AIObjects.vcxproj -> C:\MSFS SDK\Samples\VisualStudio\SimConnectSamples\AIObjectsAndWaypoints\x64\Debug\AIObjects.exe

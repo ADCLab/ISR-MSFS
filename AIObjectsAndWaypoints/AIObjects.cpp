@@ -59,6 +59,7 @@ static enum DEFINITION_ID {
 // Set up flags so these operations only happen once
 static bool plansSent = false;
 static bool	objectsCreated = false;
+int numShips = 0;
 
 void sendFlightPlans()
 {
@@ -91,7 +92,7 @@ void setUpSimObjects(int num)
 {
 	SIMCONNECT_DATA_INITPOSITION Init;
 	HRESULT hr;
-	
+	numShips = num;
 	for (int i = 0; i < num; i++)
 	{
 		Init.Altitude = 0.0;
@@ -120,9 +121,15 @@ void setUpSimObjects(int num)
 void removeSimObjects() {
 	
 	HRESULT hr;
-	
-	if (SHIPKNZYID != SIMCONNECT_OBJECT_ID_USER) {
-		hr = SimConnect_AIRemoveObject(hSimConnect, SHIPKNZYID, REQUEST_REMOVE_SHIPKNZY);
+	for (int i = 0; i < numShips; i++)
+	{
+
+
+		if (SHIPKNZYID != SIMCONNECT_OBJECT_ID_USER) {
+			hr = SimConnect_AIRemoveObject(hSimConnect, SHIPKNZYID, REQUEST_REMOVE_SHIPKNZY);
+			printf("\nRemoved SHIPKNZY id = %d", SHIPKNZYID);
+		}
+		SHIPKNZYID = (DWORD)((int)SHIPKNZYID - 1);
 	}
 }
 
@@ -226,7 +233,7 @@ void CALLBACK MyDispatchProcSO(SIMCONNECT_RECV* pData, DWORD cbData, void* pCont
 			{
 				setUpSimObjects(10);
 				objectsCreated = true;
-				printf("\nPress 'x' to add the waypoints");
+				
 			}
 			break;
 
@@ -250,70 +257,70 @@ void CALLBACK MyDispatchProcSO(SIMCONNECT_RECV* pData, DWORD cbData, void* pCont
 			{
 				setUpSimObjects(100);
 				objectsCreated = true;
-				printf("\nPress 'x' to add the waypoints");
+				
 			}
 		case EVENT_NUM1:
 			if (!objectsCreated)
 			{
 				setUpSimObjects(10);
 				objectsCreated = true;
-				printf("\nPress 'x' to add the waypoints");
+				
 			}
 		case EVENT_NUM2:
 			if (!objectsCreated)
 			{
 				setUpSimObjects(20);
 				objectsCreated = true;
-				printf("\nPress 'x' to add the waypoints");
+				
 			}
 		case EVENT_NUM3:
 			if (!objectsCreated)
 			{
 				setUpSimObjects(30);
 				objectsCreated = true;
-				printf("\nPress 'x' to add the waypoints");
+			
 			}
 		case EVENT_NUM4:
 			if (!objectsCreated)
 			{
 				setUpSimObjects(40);
 				objectsCreated = true;
-				printf("\nPress 'x' to add the waypoints");
+				
 			}
 		case EVENT_NUM5:
 			if (!objectsCreated)
 			{
 				setUpSimObjects(50);
 				objectsCreated = true;
-				printf("\nPress 'x' to add the waypoints");
+				
 			}
 		case EVENT_NUM6:
 			if (!objectsCreated)
 			{
 				setUpSimObjects(60);
 				objectsCreated = true;
-				printf("\nPress 'x' to add the waypoints");
+				
 			}
 		case EVENT_NUM7:
 			if (!objectsCreated)
 			{
 				setUpSimObjects(70);
 				objectsCreated = true;
-				printf("\nPress 'x' to add the waypoints");
+				
 			}
 		case EVENT_NUM8:
 			if (!objectsCreated)
 			{
 				setUpSimObjects(80);
 				objectsCreated = true;
-				printf("\nPress 'x' to add the waypoints");
+				
 			}
 		case EVENT_NUM9:
 			if (!objectsCreated)
 			{
 				setUpSimObjects(90);
 				objectsCreated = true;
-				printf("\nPress 'x' to add the waypoints");
+				
 			}
 		default:
 			printf("\nUnknown event: %d", evt->uEventID);
