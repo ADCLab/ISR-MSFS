@@ -15,12 +15,20 @@
 #include <tchar.h>
 #include <stdio.h>
 #include <strsafe.h>
+#include <string>
+#include <vector>
+#include <iostream>
+#include <cstdlib>
+#include <fstream>
+//#include <bits/stdc++.h>
 
 #include "SimConnect.h"
 
 int     quit = 0;
 HANDLE  hSimConnect = NULL;
 DWORD   SHIPKNZYID = SIMCONNECT_OBJECT_ID_USER;
+
+using namespace std;
 
 static enum EVENT_ID {
 	EVENT_SIM_START,
@@ -61,30 +69,80 @@ static bool plansSent = false;
 static bool	objectsCreated = false;
 int numShips = 0;
 
-void sendFlightPlans()
+std::string waypoints = "";
+int initialShipID = -1;
+const int numWaypoints = 30;
+
+
+// from http://www.digitalpeer.com/blog/simple
+vector<string> tokenize(const string& str, const string& delimiters)
+{
+	vector<string> tokens;
+
+	// skip delimiters at beginning.
+	string::size_type lastPos = str.find_first_not_of(delimiters, 0);
+
+	// find first "non-delimiter".
+	string::size_type pos = str.find_first_of(delimiters, lastPos);
+
+	while (string::npos != pos || string::npos != lastPos)
+	{
+		// found a token, add it to the vector.
+		tokens.push_back(str.substr(lastPos, pos - lastPos));
+
+		// skip delimiters.  Note the "not_of"
+		lastPos = str.find_first_not_of(delimiters, pos);
+
+		// find next "non-delimiter"
+		pos = str.find_first_of(delimiters, lastPos);
+	}
+
+	return tokens;
+}
+
+void sendFlightPlans(int shipIdx)
 {
 	HRESULT hr;
 	
-	SIMCONNECT_DATA_WAYPOINT    waypointListShipKNZY[3];
 	int n = rand() % 100;
-	waypointListShipKNZY[0].Flags = SIMCONNECT_WAYPOINT_SPEED_REQUESTED;
-	waypointListShipKNZY[0].Altitude = 0;
-	waypointListShipKNZY[0].Latitude = 32 + (40.45 + (n % 2 - 1) * 0.065 * (rand() % 10 - 2)) / 60;
-	waypointListShipKNZY[0].Longitude = -117 - (13.2 + (n % 2 - 1) * 0.061 * (rand() % 10 - 2)) / 60;
-	waypointListShipKNZY[0].ktsSpeed = 50;
 
-	waypointListShipKNZY[1].Flags = SIMCONNECT_WAYPOINT_SPEED_REQUESTED;
-	waypointListShipKNZY[1].Altitude = 0;
-	waypointListShipKNZY[1].Latitude = 32 + (40.45 + (n % 2 - 1) * 0.073 * (rand() % 10 - 2)) / 60;
-	waypointListShipKNZY[1].Longitude = -117 - (13.2 + (n % 2 - 1) * 0.082 * (rand() % 10 - 2)) / 60;
-	waypointListShipKNZY[1].ktsSpeed = 50;
+	vector<string> ships = tokenize(waypoints, ";");
 
-	waypointListShipKNZY[2].Flags = SIMCONNECT_WAYPOINT_WRAP_TO_FIRST | SIMCONNECT_WAYPOINT_SPEED_REQUESTED;
-	waypointListShipKNZY[2].Altitude = 0;
-	waypointListShipKNZY[2].Latitude = 32 + (40.45 + (n % 2 - 1) * 0.042 * (rand() % 10 - 2)) / 60;
-	waypointListShipKNZY[2].Longitude = -117 - (13.2 + (n % 2 - 1) * 0.05 * (rand() % 10 - 2)) / 60;
-	waypointListShipKNZY[2].ktsSpeed = 50;
+	vector<string> waypoints = tokenize(ships[shipIdx], ",");
+	
+	SIMCONNECT_DATA_WAYPOINT    waypointListShipKNZY[numWaypoints];
 
+	// add each waypoint
+	for (int w = 0; w < waypoints.size(); w++) {
+		vector<string> xys = tokenize(ships[shipIdx], ",");
+
+		waypointListShipKNZY[w].Flags = SIMCONNECT_WAYPOINT_SPEED_REQUESTED;
+		waypointListShipKNZY[w].Altitude = 0;
+		waypointListShipKNZY[w].Latitude = 32 + (40.45 + (n % 2 - 1) * 0.065 * (rand() % 10 - 2)) / 60;
+		waypointListShipKNZY[w].Longitude = -117 - (13.2 + (n % 2 - 1) * 0.061 * (rand() % 10 - 2)) / 60;
+		waypointListShipKNZY[w].ktsSpeed = 50;
+
+		//waypointListShipKNZY[0].Flags = SIMCONNECT_WAYPOINT_SPEED_REQUESTED;
+		//waypointListShipKNZY[0].Altitude = 0;
+		//waypointListShipKNZY[0].Latitude = 32 + (40.45 + (n % 2 - 1) * 0.065 * (rand() % 10 - 2)) / 60;
+		//waypointListShipKNZY[0].Longitude = -117 - (13.2 + (n % 2 - 1) * 0.061 * (rand() % 10 - 2)) / 60;
+		//waypointListShipKNZY[0].ktsSpeed = 50;
+
+		//waypointListShipKNZY[1].Flags = SIMCONNECT_WAYPOINT_SPEED_REQUESTED;
+		//waypointListShipKNZY[1].Altitude = 0;
+		//waypointListShipKNZY[1].Latitude = 32 + (40.45 + (n % 2 - 1) * 0.073 * (rand() % 10 - 2)) / 60;
+		//waypointListShipKNZY[1].Longitude = -117 - (13.2 + (n % 2 - 1) * 0.082 * (rand() % 10 - 2)) / 60;
+		//waypointListShipKNZY[1].ktsSpeed = 50;
+
+		//waypointListShipKNZY[2].Flags = SIMCONNECT_WAYPOINT_WRAP_TO_FIRST | SIMCONNECT_WAYPOINT_SPEED_REQUESTED;
+		//waypointListShipKNZY[2].Altitude = 0;
+		//waypointListShipKNZY[2].Latitude = 32 + (40.45 + (n % 2 - 1) * 0.042 * (rand() % 10 - 2)) / 60;
+		//waypointListShipKNZY[2].Longitude = -117 - (13.2 + (n % 2 - 1) * 0.05 * (rand() % 10 - 2)) / 60;
+		//waypointListShipKNZY[2].ktsSpeed = 50;
+
+	}
+	
+	
 	hr = SimConnect_SetDataOnSimObject(hSimConnect, DEFINITION_WAYPOINT, SHIPKNZYID, 0, ARRAYSIZE(waypointListShipKNZY), sizeof(waypointListShipKNZY[0]), waypointListShipKNZY);
 }
 
@@ -113,7 +171,7 @@ void setUpSimObjects(int num)
 			else hr = SimConnect_AICreateSimulatedObject(hSimConnect, "CargoShip01", Init, REQUEST_ADD_SHIPKNZY);
 		}
 		else hr = SimConnect_AICreateSimulatedObject(hSimConnect, "FishingBoat", Init, REQUEST_ADD_SHIPKNZY);
-		sendFlightPlans();
+		//sendFlightPlans();
 	}
 	
 }
@@ -240,7 +298,6 @@ void CALLBACK MyDispatchProcSO(SIMCONNECT_RECV* pData, DWORD cbData, void* pCont
 		case EVENT_X:
 			if (!plansSent && objectsCreated)
 			{
-				sendFlightPlans();
 				plansSent = true;
 			}
 			break;
@@ -338,8 +395,14 @@ void CALLBACK MyDispatchProcSO(SIMCONNECT_RECV* pData, DWORD cbData, void* pCont
 			
 		case REQUEST_ADD_SHIPKNZY:
 			SHIPKNZYID = pObjData->dwObjectID;
+			// if we don't know the first ship ID yet, mark it, this is for indexing in the waypoints array
+			if (initialShipID == -1) {
+				initialShipID = (int)SHIPKNZYID;
+			}
+
 			printf("\nCreated ShipKNZY id = %d", SHIPKNZYID);
-			sendFlightPlans();
+			sendFlightPlans(SHIPKNZYID - initialShipID);
+			printf("!!!!! CALLLBACK SENDGLrsetgsdrtgeIGTWERW 111111");
 			break;
 		default:
 			printf("\nUnknown creation %d", pObjData->dwRequestID);
@@ -441,8 +504,19 @@ void testSimObjects()
 	}
 }
 
-int __cdecl _tmain(int argc, _TCHAR* argv[])
+int main(int argc, char* argv[])
 {
+	printf("HELLO RICHARD!");
+	bool startingWaypoints = false;
+	waypoints = "";
+	for (int i = 0; i < argc; i++) {
+		if (!startingWaypoints && *argv[i] != ';') {
+			continue;
+		}
+		startingWaypoints = true;
+		waypoints += argv[i];
+	}
+	std::cout << waypoints << std::endl;
 	testSimObjects();
 	return 0;
 }
