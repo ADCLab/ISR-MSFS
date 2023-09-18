@@ -11,6 +11,7 @@
 //				Position, heading, and ship type are randomized.
 //------------------------------------------------------------------------------
 
+#include <algorithm>
 #include <windows.h>
 #include <tchar.h>
 #include <stdio.h>
@@ -106,42 +107,44 @@ void sendFlightPlans(int shipIdx)
 	
 	int n = rand() % 100;
 
+
 	vector<string> ships = tokenize(waypoints, ";");
 
 	vector<string> waypoints = tokenize(ships[shipIdx], ",");
 	
-	SIMCONNECT_DATA_WAYPOINT    waypointListShipKNZY[numWaypoints];
+	SIMCONNECT_DATA_WAYPOINT    waypointListShipKNZY[3];
+
+	std::cout << "GETTING WAYPOINTS " << waypoints.size() << " " << std::endl;
 
 	// add each waypoint
 	for (int w = 0; w < waypoints.size(); w++) {
 		vector<string> xys = tokenize(ships[shipIdx], ",");
 
-		waypointListShipKNZY[w].Flags = SIMCONNECT_WAYPOINT_SPEED_REQUESTED;
-		waypointListShipKNZY[w].Altitude = 0;
-		waypointListShipKNZY[w].Latitude = 32 + (40.45 + (n % 2 - 1) * 0.065 * (rand() % 10 - 2)) / 60;
-		waypointListShipKNZY[w].Longitude = -117 - (13.2 + (n % 2 - 1) * 0.061 * (rand() % 10 - 2)) / 60;
-		waypointListShipKNZY[w].ktsSpeed = 50;
+		//waypointListShipKNZY[w].Flags = SIMCONNECT_WAYPOINT_SPEED_REQUESTED;
+		//waypointListShipKNZY[w].Altitude = 0;
+		//waypointListShipKNZY[w].Latitude = 32 + (40.45 + (n % 2 - 1) * 0.065 * (rand() % 10 - 2)) / 60;
+		//waypointListShipKNZY[w].Longitude = -117 - (13.2 + (n % 2 - 1) * 0.061 * (rand() % 10 - 2)) / 60;
+		//waypointListShipKNZY[w].ktsSpeed = 50;
 
-		//waypointListShipKNZY[0].Flags = SIMCONNECT_WAYPOINT_SPEED_REQUESTED;
-		//waypointListShipKNZY[0].Altitude = 0;
-		//waypointListShipKNZY[0].Latitude = 32 + (40.45 + (n % 2 - 1) * 0.065 * (rand() % 10 - 2)) / 60;
-		//waypointListShipKNZY[0].Longitude = -117 - (13.2 + (n % 2 - 1) * 0.061 * (rand() % 10 - 2)) / 60;
-		//waypointListShipKNZY[0].ktsSpeed = 50;
+		waypointListShipKNZY[0].Flags = SIMCONNECT_WAYPOINT_SPEED_REQUESTED;
+		waypointListShipKNZY[0].Altitude = 0;
+		waypointListShipKNZY[0].Latitude = 32 + (40.45 + (n % 2 - 1) * 0.065 * (rand() % 10 - 2)) / 60;
+		waypointListShipKNZY[0].Longitude = -117 - (13.2 + (n % 2 - 1) * 0.061 * (rand() % 10 - 2)) / 60;
+		waypointListShipKNZY[0].ktsSpeed = 50;
 
-		//waypointListShipKNZY[1].Flags = SIMCONNECT_WAYPOINT_SPEED_REQUESTED;
-		//waypointListShipKNZY[1].Altitude = 0;
-		//waypointListShipKNZY[1].Latitude = 32 + (40.45 + (n % 2 - 1) * 0.073 * (rand() % 10 - 2)) / 60;
-		//waypointListShipKNZY[1].Longitude = -117 - (13.2 + (n % 2 - 1) * 0.082 * (rand() % 10 - 2)) / 60;
-		//waypointListShipKNZY[1].ktsSpeed = 50;
+		waypointListShipKNZY[1].Flags = SIMCONNECT_WAYPOINT_SPEED_REQUESTED;
+		waypointListShipKNZY[1].Altitude = 0;
+		waypointListShipKNZY[1].Latitude = 32 + (40.45 + (n % 2 - 1) * 0.073 * (rand() % 10 - 2)) / 60;
+		waypointListShipKNZY[1].Longitude = -117 - (13.2 + (n % 2 - 1) * 0.082 * (rand() % 10 - 2)) / 60;
+		waypointListShipKNZY[1].ktsSpeed = 50;
 
-		//waypointListShipKNZY[2].Flags = SIMCONNECT_WAYPOINT_WRAP_TO_FIRST | SIMCONNECT_WAYPOINT_SPEED_REQUESTED;
-		//waypointListShipKNZY[2].Altitude = 0;
-		//waypointListShipKNZY[2].Latitude = 32 + (40.45 + (n % 2 - 1) * 0.042 * (rand() % 10 - 2)) / 60;
-		//waypointListShipKNZY[2].Longitude = -117 - (13.2 + (n % 2 - 1) * 0.05 * (rand() % 10 - 2)) / 60;
-		//waypointListShipKNZY[2].ktsSpeed = 50;
+		waypointListShipKNZY[2].Flags = SIMCONNECT_WAYPOINT_WRAP_TO_FIRST | SIMCONNECT_WAYPOINT_SPEED_REQUESTED;
+		waypointListShipKNZY[2].Altitude = 0;
+		waypointListShipKNZY[2].Latitude = 32 + (40.45 + (n % 2 - 1) * 0.042 * (rand() % 10 - 2)) / 60;
+		waypointListShipKNZY[2].Longitude = -117 - (13.2 + (n % 2 - 1) * 0.05 * (rand() % 10 - 2)) / 60;
+		waypointListShipKNZY[2].ktsSpeed = 50;
 
 	}
-	
 	
 	hr = SimConnect_SetDataOnSimObject(hSimConnect, DEFINITION_WAYPOINT, SHIPKNZYID, 0, ARRAYSIZE(waypointListShipKNZY), sizeof(waypointListShipKNZY[0]), waypointListShipKNZY);
 }
@@ -494,6 +497,9 @@ void testSimObjects()
 		printf("\nHead straight out towards the ocean, Press a number to create the boats");
 		printf("\nLaunch a flight.");
 
+		setUpSimObjects(std::count_if(waypoints.begin(), waypoints.end(), [](char c) {return c == ';'; })-1);
+		//sendFlightPlans(0);
+
 		while (0 == quit)
 		{
 			SimConnect_CallDispatch(hSimConnect, MyDispatchProcSO, NULL);
@@ -509,14 +515,16 @@ int main(int argc, char* argv[])
 	printf("HELLO RICHARD!");
 	bool startingWaypoints = false;
 	waypoints = "";
-	for (int i = 0; i < argc; i++) {
-		if (!startingWaypoints && *argv[i] != ';') {
-			continue;
-		}
-		startingWaypoints = true;
-		waypoints += argv[i];
-	}
-	std::cout << waypoints << std::endl;
+	//for (int i = 0; i < argc; i++) {
+	//	if (!startingWaypoints && *argv[i] != ';') {
+	//		continue;
+	//	}
+	//	startingWaypoints = true;
+	//	waypoints += argv[i];
+	//}
+
+	getline(std::cin, waypoints);
+	// std::cout << waypoints << std::endl;
 	testSimObjects();
 	return 0;
 }
