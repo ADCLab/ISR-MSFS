@@ -1,8 +1,12 @@
 ﻿  AIObjects.cpp
-C:\MSFS SDK\Samples\VisualStudio\SimConnectSamples\AIObjectsAndWaypoints\AIObjects.cpp(40,2): warning C4091: 'static ': ignored on left of 'EVENT_ID' when no variable is declared
-C:\MSFS SDK\Samples\VisualStudio\SimConnectSamples\AIObjectsAndWaypoints\AIObjects.cpp(45,2): warning C4091: 'static ': ignored on left of 'DATA_REQUEST_ID' when no variable is declared
-C:\MSFS SDK\Samples\VisualStudio\SimConnectSamples\AIObjectsAndWaypoints\AIObjects.cpp(49,2): warning C4091: 'static ': ignored on left of 'GROUP_ID' when no variable is declared
-C:\MSFS SDK\Samples\VisualStudio\SimConnectSamples\AIObjectsAndWaypoints\AIObjects.cpp(53,2): warning C4091: 'static ': ignored on left of 'INPUT_ID' when no variable is declared
-C:\MSFS SDK\Samples\VisualStudio\SimConnectSamples\AIObjectsAndWaypoints\AIObjects.cpp(57,2): warning C4091: 'static ': ignored on left of 'DEFINITION_ID' when no variable is declared
-C:\MSFS SDK\Samples\VisualStudio\SimConnectSamples\AIObjectsAndWaypoints\AIObjects.cpp(221,10): warning C4101: 'hr': unreferenced local variable
+C:\MSFS SDK\Samples\VisualStudio\SimConnectSamples\AIObjectsAndWaypoints\AIObjects.cpp(49,2): warning C4091: 'static ': ignored on left of 'EVENT_ID' when no variable is declared
+C:\MSFS SDK\Samples\VisualStudio\SimConnectSamples\AIObjectsAndWaypoints\AIObjects.cpp(54,2): warning C4091: 'static ': ignored on left of 'DATA_REQUEST_ID' when no variable is declared
+C:\MSFS SDK\Samples\VisualStudio\SimConnectSamples\AIObjectsAndWaypoints\AIObjects.cpp(58,2): warning C4091: 'static ': ignored on left of 'GROUP_ID' when no variable is declared
+C:\MSFS SDK\Samples\VisualStudio\SimConnectSamples\AIObjectsAndWaypoints\AIObjects.cpp(62,2): warning C4091: 'static ': ignored on left of 'INPUT_ID' when no variable is declared
+C:\MSFS SDK\Samples\VisualStudio\SimConnectSamples\AIObjectsAndWaypoints\AIObjects.cpp(66,2): warning C4091: 'static ': ignored on left of 'DEFINITION_ID' when no variable is declared
+C:\MSFS SDK\Samples\VisualStudio\SimConnectSamples\AIObjectsAndWaypoints\AIObjects.cpp(300,10): warning C4101: 'hr': unreferenced local variable
+  LINK : C:\MSFS SDK\Samples\VisualStudio\SimConnectSamples\AIObjectsAndWaypoints\x64\Debug\AIObjects.exe not found or not built by the last incremental link; performing full link
+SimConnect_debug.lib(SimConnectClient.obj) : warning LNK4099: PDB '' was not found with 'SimConnect_debug.lib(SimConnectClient.obj)' or at ''; linking object as if no debug info
+SimConnect_debug.lib(commClient.obj) : warning LNK4099: PDB '' was not found with 'SimConnect_debug.lib(commClient.obj)' or at ''; linking object as if no debug info
+SimConnect_debug.lib(client_proxy.obj) : warning LNK4099: PDB '' was not found with 'SimConnect_debug.lib(client_proxy.obj)' or at ''; linking object as if no debug info
   AIObjects.vcxproj -> C:\MSFS SDK\Samples\VisualStudio\SimConnectSamples\AIObjectsAndWaypoints\x64\Debug\AIObjects.exe

@@ -30,6 +30,7 @@ DWORD   SHIPKNZYID = SIMCONNECT_OBJECT_ID_USER;
 
 using namespace std;
 
+// Modify to remove keypress events
 static enum EVENT_ID {
 	EVENT_SIM_START,
 	EVENT_Z,
@@ -118,9 +119,17 @@ void sendFlightPlans(int shipIdx)
 
 		waypointListShipKNZY[w].Flags = SIMCONNECT_WAYPOINT_SPEED_REQUESTED;
 		waypointListShipKNZY[w].Altitude = 0;
-		waypointListShipKNZY[w].Latitude = 32 + (40.45 + (n % 2 - 1) * 0.065 * (rand() % 10 - 2)) / 60;
-		waypointListShipKNZY[w].Longitude = -117 - (13.2 + (n % 2 - 1) * 0.061 * (rand() % 10 - 2)) / 60;
-		waypointListShipKNZY[w].ktsSpeed = 50;
+		//waypointListShipKNZY[w].Latitude = 32 + (40.45 + (n % 2 - 1) * 0.065 * (rand() % 10 - 2)) / 60;
+;		//waypointListShipKNZY[w].Longitude = -117 - (13.2 + (n % 2 - 1) * 0.061 * (rand() % 10 - 2)) / 60;
+		//waypointListShipKNZY[w].ktsSpeed = 50;
+
+		double wargameCanvasSize = 460;
+		double ratioX = std::stod(xys[0]) / wargameCanvasSize;
+		double ratioY = std::stod(xys[1]) / wargameCanvasSize;
+		
+		waypointListShipKNZY[w].Latitude = 32.0 + (40.0 + (ratioX * 61) / 60.0) / 60.0;
+		waypointListShipKNZY[w].Longitude = -117.0 - (12.0 + (20 + (ratioY * 61)) / 60.0) / 60.0;
+		waypointListShipKNZY[w].ktsSpeed = std::stod(xys[2]); // Will need to changed as I think 1:1 conversion is probably incorrect
 
 		//waypointListShipKNZY[0].Flags = SIMCONNECT_WAYPOINT_SPEED_REQUESTED;
 		//waypointListShipKNZY[0].Altitude = 0;
@@ -153,9 +162,21 @@ void setUpSimObjects(int num)
 	numShips = num;
 	for (int i = 0; i < num; i++)
 	{
+		vector<string> ships = tokenize(waypoints, ";");
+
+		vector<string> waypoints = tokenize(ships[i], ",");
+
+		vector<string> xys = tokenize(ships[0], ",");
+
+		double wargameCanvasSize = 460;
+		double ratioX = std::stod(xys[0]) / wargameCanvasSize;
+		double ratioY = std::stod(xys[1]) / wargameCanvasSize;
+
 		Init.Altitude = 0.0;
-		Init.Latitude = 32.0 + (40.0 + (rand()%61) / 60.0) / 60.0;
-		Init.Longitude = -117.0 - (12.0 + (20 + (rand()%61)) / 60.0) / 60.0;
+		// Coordinates need to be changed to have the bottom left of the square (wargame plane start location) be at the aircraft carrier
+		// Square also needs to be enlarged (as this is still a pretty small area)
+		Init.Latitude = 32.0 + (40.0 + (ratioX * 61) / 60.0) / 60.0;
+		Init.Longitude = -117.0 - (12.0 + (20 + (ratioY * 61)) / 60.0) / 60.0;
 		Init.Pitch = 0.0;
 		Init.Bank = 0.0;
 		Init.Heading = rand() % 361;
@@ -171,7 +192,7 @@ void setUpSimObjects(int num)
 			else hr = SimConnect_AICreateSimulatedObject(hSimConnect, "CargoShip01", Init, REQUEST_ADD_SHIPKNZY);
 		}
 		else hr = SimConnect_AICreateSimulatedObject(hSimConnect, "FishingBoat", Init, REQUEST_ADD_SHIPKNZY);
-		//sendFlightPlans();
+		sendFlightPlans(i);
 	}
 	
 }
