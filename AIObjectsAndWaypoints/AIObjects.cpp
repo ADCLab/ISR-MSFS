@@ -113,7 +113,7 @@ void sendFlightPlans(int shipIdx)
 	
 	SIMCONNECT_DATA_WAYPOINT    waypointListShipKNZY[numWaypoints];
 
-	std::cout << "GETTING WAYPOINTS " << waypoints.size() << " " << std::endl;
+	//std::cout << "GETTING WAYPOINTS " << waypoints.size() << " " << std::endl;
 
 	// add each waypoint
 	for (int w = 1; w < numWaypoints; w++) {
@@ -126,10 +126,10 @@ void sendFlightPlans(int shipIdx)
 		}
 		//cout << "Waypoint " << x << " " << y << " " << s << endl;
 
-		waypointListShipKNZY[w].Flags = SIMCONNECT_WAYPOINT_SPEED_REQUESTED;
+		waypointListShipKNZY[w].Flags = w < numWaypoints - 1 ? SIMCONNECT_WAYPOINT_SPEED_REQUESTED : SIMCONNECT_WAYPOINT_WRAP_TO_FIRST | SIMCONNECT_WAYPOINT_SPEED_REQUESTED;
 		waypointListShipKNZY[w].Altitude = 0;
-		waypointListShipKNZY[w].Latitude = 32 + (40 - (y-.5) * scale) / 60 + shiftWest;
-		waypointListShipKNZY[w].Longitude = -117 - (13.2 - (x-.5) * scale) / 60 + shiftNorth;
+		waypointListShipKNZY[w].Latitude = 32 + (40 - (y - .5) * scale) / 60.0 + shiftWest;
+		waypointListShipKNZY[w].Longitude = -117 - (13.2 - (x - .5) * scale) / 60.0 + shiftNorth;
 		waypointListShipKNZY[w].ktsSpeed = s;
 	}
 	
@@ -170,7 +170,6 @@ void setUpSimObjects(int num)
 			else hr = SimConnect_AICreateSimulatedObject(hSimConnect, "CargoShip01", Init, REQUEST_ADD_SHIPKNZY);
 		}
 		else hr = SimConnect_AICreateSimulatedObject(hSimConnect, "FishingBoat", Init, REQUEST_ADD_SHIPKNZY);
-		//sendFlightPlans();
 	}
 	
 }
@@ -518,12 +517,16 @@ int main(int argc, char* argv[])
 	getline(std::cin, shiftWestString);
 	shiftWest = -1 * stod(shiftWestString);
 
+	string scaleString = "";
+	getline(std::cin, scaleString);
+	scale = stod(scaleString);
+
 	// read in the waypoints
 
 	waypoints = "";
 	getline(std::cin, waypoints);
 
-	cout << "Shift West: " << shiftWest << " " << shiftWestString << ", North: " << shiftNorth << endl;
+	cout << "Shift West: " << shiftWest << ", North: " << shiftNorth << endl;
 
 	// convert into a long vector of doubles
 	vector<string> ships = tokenize(waypoints, ";");
