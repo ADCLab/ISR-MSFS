@@ -113,8 +113,6 @@ void sendFlightPlans(int shipIdx)
 	
 	SIMCONNECT_DATA_WAYPOINT    waypointListShipKNZY[numWaypoints];
 
-	//std::cout << "GETTING WAYPOINTS " << waypoints.size() << " " << std::endl;
-
 	// add each waypoint
 	for (int w = 1; w < numWaypoints; w++) {
 		// get the values for this ship and waypoint
@@ -126,13 +124,19 @@ void sendFlightPlans(int shipIdx)
 		}
 		//cout << "Waypoint " << x << " " << y << " " << s << endl;
 
-		waypointListShipKNZY[w].Flags = w < numWaypoints - 1 ? SIMCONNECT_WAYPOINT_SPEED_REQUESTED : SIMCONNECT_WAYPOINT_WRAP_TO_FIRST | SIMCONNECT_WAYPOINT_SPEED_REQUESTED;
-		waypointListShipKNZY[w].Altitude = 0;
-		waypointListShipKNZY[w].Latitude = 32 + (40 - (y - .5) * scale) / 60.0 + shiftWest;
-		waypointListShipKNZY[w].Longitude = -117 - (13.2 - (x - .5) * scale) / 60.0 + shiftNorth;
-		waypointListShipKNZY[w].ktsSpeed = s;
+		waypointListShipKNZY[w-1].Flags = SIMCONNECT_WAYPOINT_SPEED_REQUESTED;
+		waypointListShipKNZY[w-1].Altitude = 0;
+		waypointListShipKNZY[w-1].Latitude = 32.0 + (40.0 - (y -.5) * scale) / 60.0 + shiftWest;
+		waypointListShipKNZY[w-1].Longitude = -117.0 - (13.2 - (x - .5) * scale) / 60.0 + shiftNorth;
+		waypointListShipKNZY[w-1].ktsSpeed = s * 40;
 	}
-	
+
+	waypointListShipKNZY[numWaypoints-1].Flags = SIMCONNECT_WAYPOINT_SPEED_REQUESTED;
+	waypointListShipKNZY[numWaypoints-1].Altitude = 0;
+	waypointListShipKNZY[numWaypoints-1].Latitude = 32 + (40 - (.75 - .5) * scale) / 60.0 + shiftWest;
+	waypointListShipKNZY[numWaypoints-1].Longitude = -117 - (13.2 - (.75 - .5) * scale) / 60.0 + shiftNorth;
+	waypointListShipKNZY[numWaypoints-1].ktsSpeed = 0;
+
 	hr = SimConnect_SetDataOnSimObject(hSimConnect, DEFINITION_WAYPOINT, SHIPKNZYID, 0, ARRAYSIZE(waypointListShipKNZY), sizeof(waypointListShipKNZY[0]), waypointListShipKNZY);
 }
 
