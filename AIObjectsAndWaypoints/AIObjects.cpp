@@ -11,6 +11,9 @@
 //				Position, heading, and ship type are randomized.
 //------------------------------------------------------------------------------
 
+#include <algorithm>
+#include <csignal>
+#include <cmath>
 #include <windows.h>
 #include <tchar.h>
 #include <stdio.h>
@@ -30,7 +33,6 @@ DWORD   SHIPKNZYID = SIMCONNECT_OBJECT_ID_USER;
 
 using namespace std;
 
-// Modify to remove keypress events
 static enum EVENT_ID {
 	EVENT_SIM_START,
 	EVENT_Z,
@@ -74,6 +76,10 @@ std::string waypoints = "";
 int initialShipID = -1;
 const int numWaypoints = 30;
 
+vector<double> xys;  // vector of doubles, do some algebra to get x y s for each ship and waypoint
+double scale = 1;  // scale of the spawn board
+double shiftWest = 0;  // shift west, keep this small
+double shiftNorth = 0;  // shift north, keep this small
 
 // from http://www.digitalpeer.com/blog/simple
 vector<string> tokenize(const string& str, const string& delimiters)
@@ -105,52 +111,27 @@ void sendFlightPlans(int shipIdx)
 {
 	HRESULT hr;
 	
-	int n = rand() % 100;
-
-	vector<string> ships = tokenize(waypoints, ";");
-
-	vector<string> waypoints = tokenize(ships[shipIdx], ",");
-	
 	SIMCONNECT_DATA_WAYPOINT    waypointListShipKNZY[numWaypoints];
 
+	//std::cout << "GETTING WAYPOINTS " << waypoints.size() << " " << std::endl;
+
 	// add each waypoint
-	for (int w = 0; w < waypoints.size(); w++) {
-		vector<string> xys = tokenize(ships[shipIdx], ",");
+	for (int w = 1; w < numWaypoints; w++) {
+		// get the values for this ship and waypoint
+		double x = xys[shipIdx * numWaypoints * 3 + w * 3 + 0];
+		double y = xys[shipIdx * numWaypoints * 3 + w * 3 + 1];
+		double s = xys[shipIdx * numWaypoints * 3 + w * 3 + 2];
+		if (s == 0) {
+			return; // no waypoints needed if s = 0
+		}
+		//cout << "Waypoint " << x << " " << y << " " << s << endl;
 
-		waypointListShipKNZY[w].Flags = SIMCONNECT_WAYPOINT_SPEED_REQUESTED;
+		waypointListShipKNZY[w].Flags = w < numWaypoints - 1 ? SIMCONNECT_WAYPOINT_SPEED_REQUESTED : SIMCONNECT_WAYPOINT_WRAP_TO_FIRST | SIMCONNECT_WAYPOINT_SPEED_REQUESTED;
 		waypointListShipKNZY[w].Altitude = 0;
-		//waypointListShipKNZY[w].Latitude = 32 + (40.45 + (n % 2 - 1) * 0.065 * (rand() % 10 - 2)) / 60;
-;		//waypointListShipKNZY[w].Longitude = -117 - (13.2 + (n % 2 - 1) * 0.061 * (rand() % 10 - 2)) / 60;
-		//waypointListShipKNZY[w].ktsSpeed = 50;
-
-		double wargameCanvasSize = 460;
-		double ratioX = std::stod(xys[0]) / wargameCanvasSize;
-		double ratioY = std::stod(xys[1]) / wargameCanvasSize;
-		
-		waypointListShipKNZY[w].Latitude = 32.0 + (40.0 + (ratioX * 61) / 60.0) / 60.0;
-		waypointListShipKNZY[w].Longitude = -117.0 - (12.0 + (20 + (ratioY * 61)) / 60.0) / 60.0;
-		waypointListShipKNZY[w].ktsSpeed = std::stod(xys[2]); // Will need to changed as I think 1:1 conversion is probably incorrect
-
-		//waypointListShipKNZY[0].Flags = SIMCONNECT_WAYPOINT_SPEED_REQUESTED;
-		//waypointListShipKNZY[0].Altitude = 0;
-		//waypointListShipKNZY[0].Latitude = 32 + (40.45 + (n % 2 - 1) * 0.065 * (rand() % 10 - 2)) / 60;
-		//waypointListShipKNZY[0].Longitude = -117 - (13.2 + (n % 2 - 1) * 0.061 * (rand() % 10 - 2)) / 60;
-		//waypointListShipKNZY[0].ktsSpeed = 50;
-
-		//waypointListShipKNZY[1].Flags = SIMCONNECT_WAYPOINT_SPEED_REQUESTED;
-		//waypointListShipKNZY[1].Altitude = 0;
-		//waypointListShipKNZY[1].Latitude = 32 + (40.45 + (n % 2 - 1) * 0.073 * (rand() % 10 - 2)) / 60;
-		//waypointListShipKNZY[1].Longitude = -117 - (13.2 + (n % 2 - 1) * 0.082 * (rand() % 10 - 2)) / 60;
-		//waypointListShipKNZY[1].ktsSpeed = 50;
-
-		//waypointListShipKNZY[2].Flags = SIMCONNECT_WAYPOINT_WRAP_TO_FIRST | SIMCONNECT_WAYPOINT_SPEED_REQUESTED;
-		//waypointListShipKNZY[2].Altitude = 0;
-		//waypointListShipKNZY[2].Latitude = 32 + (40.45 + (n % 2 - 1) * 0.042 * (rand() % 10 - 2)) / 60;
-		//waypointListShipKNZY[2].Longitude = -117 - (13.2 + (n % 2 - 1) * 0.05 * (rand() % 10 - 2)) / 60;
-		//waypointListShipKNZY[2].ktsSpeed = 50;
-
+		waypointListShipKNZY[w].Latitude = 32 + (40 - (y - .5) * scale) / 60.0 + shiftWest;
+		waypointListShipKNZY[w].Longitude = -117 - (13.2 - (x - .5) * scale) / 60.0 + shiftNorth;
+		waypointListShipKNZY[w].ktsSpeed = s; // Even if s = 0, some ships still move
 	}
-	
 	
 	hr = SimConnect_SetDataOnSimObject(hSimConnect, DEFINITION_WAYPOINT, SHIPKNZYID, 0, ARRAYSIZE(waypointListShipKNZY), sizeof(waypointListShipKNZY[0]), waypointListShipKNZY);
 }
@@ -159,27 +140,24 @@ void setUpSimObjects(int num)
 {
 	SIMCONNECT_DATA_INITPOSITION Init;
 	HRESULT hr;
-	numShips = num;
+	numShips = num; // Still one less than it's supposed to make, error is happening before this point
 	for (int i = 0; i < num; i++)
 	{
-		vector<string> ships = tokenize(waypoints, ";");
+		// pull the ship position
+		double x = xys[i * numWaypoints * 3 + 0];
+		double y = xys[i * numWaypoints * 3 + 1];
+		double s = xys[i * numWaypoints * 3 + 2];
 
-		vector<string> waypoints = tokenize(ships[i], ",");
-
-		vector<string> xys = tokenize(ships[0], ",");
-
-		double wargameCanvasSize = 460;
-		double ratioX = std::stod(xys[0]) / wargameCanvasSize;
-		double ratioY = std::stod(xys[1]) / wargameCanvasSize;
+		double x_next = xys[i * numWaypoints * 3 + 3];
+		double y_next = xys[i * numWaypoints * 3 + 4];
+		double s_next = xys[i * numWaypoints * 3 + 5];
 
 		Init.Altitude = 0.0;
-		// Coordinates need to be changed to have the bottom left of the square (wargame plane start location) be at the aircraft carrier
-		// Square also needs to be enlarged (as this is still a pretty small area)
-		Init.Latitude = 32.0 + (40.0 + (ratioX * 61) / 60.0) / 60.0;
-		Init.Longitude = -117.0 - (12.0 + (20 + (ratioY * 61)) / 60.0) / 60.0;
+		Init.Latitude = 32 + (40 - (y-.5) * scale) / 60.0 + shiftWest;
+		Init.Longitude = -117 - (13.2 - (x-.5) * scale) / 60.0 + shiftNorth;
 		Init.Pitch = 0.0;
 		Init.Bank = 0.0;
-		Init.Heading = rand() % 361;
+		Init.Heading = atan2(y_next - y, x_next - x) * 180 / 3.14159 + 180;  // degrees
 		Init.OnGround = 1;
 		Init.Airspeed = 0;
 		int type = rand() % 3;
@@ -192,7 +170,6 @@ void setUpSimObjects(int num)
 			else hr = SimConnect_AICreateSimulatedObject(hSimConnect, "CargoShip01", Init, REQUEST_ADD_SHIPKNZY);
 		}
 		else hr = SimConnect_AICreateSimulatedObject(hSimConnect, "FishingBoat", Init, REQUEST_ADD_SHIPKNZY);
-		sendFlightPlans(i);
 	}
 	
 }
@@ -512,9 +489,10 @@ void testSimObjects()
 			"AI Waypoint List", "number", SIMCONNECT_DATATYPE_WAYPOINT);
 
 		hr = SimConnect_SetInputGroupState(hSimConnect, INPUT_ZX, SIMCONNECT_STATE_ON);
-		printf("\nHead straight out towards the ocean, Press a number to create the boats");
-		printf("\nLaunch a flight.");
 
+		setUpSimObjects(std::count_if(waypoints.begin(), waypoints.end(), [](char c) {return c == ';'; })); // had -1
+
+		// wait forever
 		while (0 == quit)
 		{
 			SimConnect_CallDispatch(hSimConnect, MyDispatchProcSO, NULL);
@@ -527,17 +505,43 @@ void testSimObjects()
 
 int main(int argc, char* argv[])
 {
-	printf("HELLO RICHARD!");
+	printf("The ship spawner has been launched!");
 	bool startingWaypoints = false;
+
+	// read in the shift
+	string shiftNorthString = "";
+	getline(std::cin, shiftNorthString);
+	shiftNorth = -1 * stod(shiftNorthString);
+	
+	string shiftWestString = "";
+	getline(std::cin, shiftWestString);
+	shiftWest = -1 * stod(shiftWestString);
+
+	string scaleString = "";
+	getline(std::cin, scaleString);
+	scale = stod(scaleString);
+
+	// read in the waypoints
+
 	waypoints = "";
-	for (int i = 0; i < argc; i++) {
-		if (!startingWaypoints && *argv[i] != ';') {
-			continue;
+	getline(std::cin, waypoints);
+
+	cout << "Shift West: " << shiftWest << ", North: " << shiftNorth << endl;
+
+	// convert into a long vector of doubles
+	vector<string> ships = tokenize(waypoints, ";");
+	numShips = ships.size();
+	for (int i = 0; i < ships.size(); i++) {
+		vector<string> shipWaypoints = tokenize(ships[i], ",");
+		for (int w = 0; w < shipWaypoints.size(); w++) {
+			vector<string> pts = tokenize(shipWaypoints[w], "-");
+			for (string pt : pts) {
+				xys.push_back(stod(pt));
+			}
 		}
-		startingWaypoints = true;
-		waypoints += argv[i];
 	}
-	std::cout << waypoints << std::endl;
+
+	// generate the ships
 	testSimObjects();
 	return 0;
 }
