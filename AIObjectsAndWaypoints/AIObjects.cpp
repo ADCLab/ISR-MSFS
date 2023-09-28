@@ -120,7 +120,8 @@ void sendFlightPlans(int shipIdx)
 		double y = xys[shipIdx * numWaypoints * 3 + w * 3 + 1];
 		double s = xys[shipIdx * numWaypoints * 3 + w * 3 + 2];
 		if (s == 0) {
-			s = 100;
+			return;
+			//s = 100;
 		}
 		//cout << "Waypoint " << x << " " << y << " " << s << endl;
 
@@ -494,7 +495,7 @@ void testSimObjects()
 
 		hr = SimConnect_SetInputGroupState(hSimConnect, INPUT_ZX, SIMCONNECT_STATE_ON);
 
-		setUpSimObjects(std::count_if(waypoints.begin(), waypoints.end(), [](char c) {return c == ';'; })-1);
+		setUpSimObjects(std::count_if(waypoints.begin(), waypoints.end(), [](char c) {return c == ';'; })-1); // removed -1 from the end
 
 		// wait forever
 		while (0 == quit)
