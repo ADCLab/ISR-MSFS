@@ -77,7 +77,7 @@ int initialShipID = -1;
 const int numWaypoints = 30;
 
 vector<double> xys;  // vector of doubles, do some algebra to get x y s for each ship and waypoint
-double scale = 1;  // scale of the spawn board
+double scale = 86.4;  // scale of the spawn board
 double shiftWest = 0;  // shift west, keep this small
 double shiftNorth = 0;  // shift north, keep this small
 
@@ -120,21 +120,22 @@ void sendFlightPlans(int shipIdx)
 		double y = xys[shipIdx * numWaypoints * 3 + w * 3 + 1];
 		double s = xys[shipIdx * numWaypoints * 3 + w * 3 + 2];
 		if (s == 0) {
-			s = 100;
+			return;
+			//s = 100;
 		}
 		//cout << "Waypoint " << x << " " << y << " " << s << endl;
 
 		waypointListShipKNZY[w-1].Flags = SIMCONNECT_WAYPOINT_SPEED_REQUESTED;
 		waypointListShipKNZY[w-1].Altitude = 0;
-		waypointListShipKNZY[w-1].Latitude = 32.0 + (40.0 - (y -.5) * scale) / 60.0 + shiftWest;
-		waypointListShipKNZY[w-1].Longitude = -117.0 - (13.2 - (x - .5) * scale) / 60.0 + shiftNorth;
+		waypointListShipKNZY[w-1].Latitude = 33 - ((y - .5) * scale) / 60.0 + shiftWest;
+		waypointListShipKNZY[w-1].Longitude = -118 + ((x - .5) * scale) / 60.0 + shiftNorth;
 		waypointListShipKNZY[w-1].ktsSpeed = s * 40;
 	}
 
 	waypointListShipKNZY[numWaypoints-1].Flags = SIMCONNECT_WAYPOINT_SPEED_REQUESTED;
 	waypointListShipKNZY[numWaypoints-1].Altitude = 0;
-	waypointListShipKNZY[numWaypoints-1].Latitude = 32 + (40 - (.75 - .5) * scale) / 60.0 + shiftWest;
-	waypointListShipKNZY[numWaypoints-1].Longitude = -117 - (13.2 - (.75 - .5) * scale) / 60.0 + shiftNorth;
+	waypointListShipKNZY[numWaypoints-1].Latitude = 33 - ((.75 - .5) * scale) / 60.0 + shiftWest;
+	waypointListShipKNZY[numWaypoints-1].Longitude = -118 + ((.75 - .5) * scale) / 60.0 + shiftNorth;
 	waypointListShipKNZY[numWaypoints-1].ktsSpeed = 0;
 
 	hr = SimConnect_SetDataOnSimObject(hSimConnect, DEFINITION_WAYPOINT, SHIPKNZYID, 0, ARRAYSIZE(waypointListShipKNZY), sizeof(waypointListShipKNZY[0]), waypointListShipKNZY);
@@ -157,8 +158,8 @@ void setUpSimObjects(int num)
 		double s_next = xys[i * numWaypoints * 3 + 5];
 
 		Init.Altitude = 0.0;
-		Init.Latitude = 32 + (40 - (y-.5) * scale) / 60.0 + shiftWest;
-		Init.Longitude = -117 - (13.2 - (x-.5) * scale) / 60.0 + shiftNorth;
+		Init.Latitude = 33 - ((y-.5) * scale) / 60.0 + shiftWest;
+		Init.Longitude = -118 + ((x-.5) * scale) / 60.0 + shiftNorth;
 		Init.Pitch = 0.0;
 		Init.Bank = 0.0;
 		Init.Heading = atan2(y_next - y, x_next - x) * 180 / 3.14159 + 180;  // degrees
@@ -494,7 +495,7 @@ void testSimObjects()
 
 		hr = SimConnect_SetInputGroupState(hSimConnect, INPUT_ZX, SIMCONNECT_STATE_ON);
 
-		setUpSimObjects(std::count_if(waypoints.begin(), waypoints.end(), [](char c) {return c == ';'; })-1);
+		setUpSimObjects(std::count_if(waypoints.begin(), waypoints.end(), [](char c) {return c == ';'; })-1); // removed -1 from the end
 
 		// wait forever
 		while (0 == quit)
