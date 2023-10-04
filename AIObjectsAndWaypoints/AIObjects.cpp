@@ -2,13 +2,6 @@
 //
 //  SimConnect AI Objects sample -- Modified for more complex creation of ships
 //  
-//	Description:
-//				Adds Non ATC controlled simulation objects.
-//				Launch a flight from KNZY runway 18 and head towards the ocean.
-//				
-//				Press a number 0-9 to create a number of ships. 
-//				1 = 10 ships, 2 = 20 ships ... 0 = 100 ships
-//				Position, heading, and ship type are randomized.
 //------------------------------------------------------------------------------
 
 #include <algorithm>
