@@ -70,7 +70,7 @@ int initialShipID = -1;
 const int numWaypoints = 30;
 
 vector<double> xys;  // vector of doubles, do some algebra to get x y s for each ship and waypoint
-double scale = 86.4;  // scale of the spawn board
+double scale = 86.4 * 0.1;  // scale of the spawn board
 double shiftWest = 0;  // shift west, keep this small
 double shiftNorth = 0;  // shift north, keep this small
 
