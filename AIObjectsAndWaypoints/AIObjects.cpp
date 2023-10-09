@@ -398,7 +398,7 @@ void CALLBACK MyDispatchProcSO(SIMCONNECT_RECV* pData, DWORD cbData, void* pCont
 
 			printf("\nCreated ShipKNZY id = %d", SHIPKNZYID);
 			sendFlightPlans(SHIPKNZYID - initialShipID);
-			printf("!!!!! CALLLBACK SENDGLrsetgsdrtgeIGTWERW 111111");
+			//printf("!!!!! CALLLBACK SENDGLrsetgsdrtgeIGTWERW 111111");
 			break;
 		default:
 			printf("\nUnknown creation %d", pObjData->dwRequestID);
