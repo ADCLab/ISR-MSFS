@@ -43,12 +43,12 @@ CONTROL.PARAM.ALTITUDE = 1.5e3;
 CONTROL.PARAM.ALTITUDE_REF = 1.5e3;
 CONTROL.PARAM.RHO = 20.902e6 + CONTROL.PARAM.ALTITUDE; % feet
 %CONTROL.OUTPUT.ALTITUDE = 0;
-CONTROL.PARAM.VERTICAL_SPEED =17; % (feet/s)
+CONTROL.PARAM.VERTICAL_SPEED =0; % (feet/s)
 %--------------------------------------------------------------------------
 % CONTROL TARGET
 %--------------------------------------------------------------------------
 % Targets for navigation
-CONTROL.TARGET.VELOCITY = 303.806; % OSPREY - feet/sec
+CONTROL.TARGET.VELOCITY = 1.5*303.806; % OSPREY - feet/sec
 CONTROL.TARGET.SIMU_END = 0;
 CONTROL.TARGET.LATITUDE = 0;
 CONTROL.TARGET.LONGITUDE = 0;
