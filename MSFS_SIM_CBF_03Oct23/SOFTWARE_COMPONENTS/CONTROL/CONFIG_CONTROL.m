@@ -15,10 +15,10 @@ CONTROL.PARAM.TIMER = 0;
 % SAFETY FILTERS PARAMETERS
 %--------------------------------------------------------------------------
 CONTROL.PARAM.DIST_THRESHOLD = 1*10e2; % Radious of 1000 ft to detect target
-CONTROL.PARAM.DIST_OBSTACLE = 1519.029; % (ft) radius around boats .25 nautical miles 
+CONTROL.PARAM.DIST_OBSTACLE = 1519.029*0.1; % (ft) radius around boats .25 nautical miles 
 % CONTROL.PARAM.DIST_OBSTACLE = 1000; % (ft) radius around boats 
 CONTROL.PARAM.DIST_GOAL = 10; % (ft) WP reached
-CONTROL.PARAM.CBF_CONST = 0.1; % For OSPREY
+CONTROL.PARAM.CBF_CONST = 0.1*0.8; % For OSPREY
 CONTROL.PARAM.FVAL = 0;
 CONTROL.PARAM.EXITVAL = 0;
 CONTROL.PARAM.CBF_H = zeros(10,1);
