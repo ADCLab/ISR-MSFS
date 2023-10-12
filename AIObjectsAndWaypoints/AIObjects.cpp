@@ -122,7 +122,7 @@ void sendFlightPlans(int shipIdx)
 		waypointListShipKNZY[w-1].Altitude = 0;
 		waypointListShipKNZY[w-1].Latitude = 33 - ((y - .5) * scale) / 60.0 + shiftWest;
 		waypointListShipKNZY[w-1].Longitude = -118 + ((x - .5) * scale) / 60.0 + shiftNorth;
-		waypointListShipKNZY[w-1].ktsSpeed = s * 40;
+		waypointListShipKNZY[w-1].ktsSpeed = s;
 	}
 
 	waypointListShipKNZY[numWaypoints-1].Flags = SIMCONNECT_WAYPOINT_SPEED_REQUESTED;
