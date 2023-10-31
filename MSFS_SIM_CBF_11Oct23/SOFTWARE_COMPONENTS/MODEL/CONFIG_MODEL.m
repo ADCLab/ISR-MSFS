@@ -10,6 +10,7 @@ MODEL.PARAM.SIM_SAMPLING_TIME = SAMPLING_TIME;
 MODEL.PARAM.SIM_FINAL_TIME = 2000;
 MODEL.PARAM.FLIGHT_STATUS = 0;
 MODEL.PARAM.HEADING_OFFSET = 3*pi/180*0;
+MODEL.PARAM.RESET_POS = 0;
 %--------------------------------------------------------------------------
 % SECOND ORDER UNICYCLE PARAMETERS
 %--------------------------------------------------------------------------
@@ -32,6 +33,10 @@ MODEL.INPUT.LATITUDE = 33*pi/180; % CENTER OF SEARCH GRID
 % MODEL.INPUT.LONGITUDE = -84.37393441343322*pi/180; % San Diego Navy Airport
 % MODEL.INPUT.LONGITUDE = -117.23*pi/180; % AG01
 MODEL.INPUT.LONGITUDE = -118*pi/180; % CENTER OF SEARCH GRID
+
+% Initial Conditions - Reset Integrator
+MODEL.PARAM.INIT_LONG = MODEL.INPUT.LONGITUDE;
+MODEL.PARAM.INIT_LAT = MODEL.INPUT.LATITUDE;
 %--------------------------------------------------------------------------
 % MODEL OUTPUT
 %--------------------------------------------------------------------------
@@ -66,6 +71,7 @@ MODEL.OUTPUT.X2 =  rho*cos(MODEL.INPUT.LATITUDE)*sin(MODEL.INPUT.LONGITUDE);
 % theta = STATE(6)
 % omega = STATE(7)
 MODEL.STATE = zeros(7,1);
+MODEL.PARAM.INIT_STATE = zeros(7,1);
 MODEL.STATE(5) = 0;
 MODEL.STATE(6) = 0;
 MODEL.STATE(7) = 0;
@@ -74,6 +80,7 @@ MODEL.STATE(2) = MODEL.OUTPUT.X2 + MODEL.PARAM.DISP_P*sin(MODEL.STATE(6));
 MODEL.STATE(3) =  MODEL.STATE(5)*cos(MODEL.STATE(6)) - MODEL.PARAM.DISP_P*MODEL.STATE(7)*sin(MODEL.STATE(6));
 MODEL.STATE(4) =  MODEL.STATE(5)*sin(MODEL.STATE(6)) + MODEL.PARAM.DISP_P*MODEL.STATE(7)*cos(MODEL.STATE(6));
 
+MODEL.PARAM.INIT_STATE(:) = MODEL.STATE(:);
 % Output x = sqrt(x1^2 + x2^2)
 MODEL.OUTPUT.X = sqrt(MODEL.OUTPUT.X1^2 + MODEL.OUTPUT.X2^2);
 % Output y = sqrt(y1^2 + y2^2)

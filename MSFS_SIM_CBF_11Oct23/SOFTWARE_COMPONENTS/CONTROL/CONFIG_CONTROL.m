@@ -10,7 +10,7 @@ CONTROL.PARAM.TAU_MAX = 20;
 CONTROL.PARAM.SIM_TIME = 0;
 CONTROL.PARAM.FLIGHT_STATUS = 0;
 CONTROL.PARAM.TIMER = 0;
-
+CONTROL.PARAM.RESET_POS = 0;
 %--------------------------------------------------------------------------
 % SAFETY FILTERS PARAMETERS
 %--------------------------------------------------------------------------
