@@ -9,7 +9,7 @@ warning ('off', 'all')
 %% GENERAL CONFIGURATION
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % SIM CONTROL MODE: 0 - TRACKING ONLY / 1 - CBFS + TRACKING
-SIM_CONTROL_MODE = 0;
+SIM_CONTROL_MODE = 1;
 % COMMUNICATIONS MODE: 0 - LOCAL / 1 - SERVER
 COMMUNICATIONS_MODE = 1;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
