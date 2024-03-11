@@ -15,9 +15,12 @@ MODEL.PARAM.RESET_POS = 0;
 % HUMAN ATTENTIVENESS
 %--------------------------------------------------------------------------
 MODEL.PARAM.HUMAN_ATT_MODE = HUMAN_ATT_MODE;
-MODEL.PARAM.ATT_SCALE_FACTOR = 10*1;
+MODEL.PARAM.ATT_SCALE_FACTOR = 1*1;
 MODEL.INPUT.ATT_VALUE = 0;
 MODEL.PARAM.ATT_SAT_FLAG = 0;
+MODEL.AUX.ALPHA_DOT = 0;
+MODEL.AUX.ALPHA = 0;
+MODEL.AUX.PATH_FOLLOWED =0;
 %--------------------------------------------------------------------------
 % SECOND ORDER UNICYCLE PARAMETERS
 %--------------------------------------------------------------------------
